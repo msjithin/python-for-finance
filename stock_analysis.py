@@ -22,7 +22,6 @@ my_year_month_fmt = mdates.DateFormatter('%m/%y')
 tickers = ['AAPL', 'MSFT', '^GSPC']
 
 
-
 # User pandas_reader.data.DataReader to load the desired data. As simple as that.
 #panel_data = data.DataReader(name='', 'yahoo', start_date, end_date)
 # We would like all available data from 01/01/2000 until today.
@@ -58,17 +57,16 @@ def get_time_series(name='MSFT'):
     long_rolling_msft = msft.rolling(window=100).mean()
 
     # Plot everything by leveraging the very powerful matplotlib package
-    fig, ax = plt.subplots(figsize=(12,5))
+    fig_ts, ax_ts = plt.subplots(figsize=(12,5))
 
-    ax.plot(msft.index, msft, label=name)
-    ax.plot(short_rolling_msft.index, short_rolling_msft, label='20 days rolling')
-    ax.plot(long_rolling_msft.index, long_rolling_msft, label='100 days rolling')
+    ax_ts.plot(msft.index, msft, label=name)
+    ax_ts.plot(short_rolling_msft.index, short_rolling_msft, label='20 days rolling')
+    ax_ts.plot(long_rolling_msft.index, long_rolling_msft, label='100 days rolling')
 
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Adjusted closing price ($)')
-    ax.legend()
-    plt.show()
-    return
+    ax_ts.set_xlabel('Date')
+    ax_ts.set_ylabel('Adjusted closing price ($)')
+    ax_ts.legend()
+    return fig_ts
 
 #get_time_series('MSFT')
 
