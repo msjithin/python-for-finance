@@ -263,7 +263,7 @@ for ax, col in zip(axes, plot_cols):
     plt.tight_layout()
 
 
-#plt.show()
+plt.show()
 # add logo watermark
 #im = mpl.image.imread(logo_loc)
 #axes[0].figure.figimage(im, origin='upper', alpha=0.125, zorder=10)

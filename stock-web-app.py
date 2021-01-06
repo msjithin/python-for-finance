@@ -227,7 +227,7 @@ fig.update_xaxes(
 )
 fig.update_layout(
     title='Candlestick graph',
-    yaxis_title='AAPL Stock',
+    yaxis_title=  symbol.upper()+' Stock',
     width=1150,
     height=500,
     shapes = [dict(
