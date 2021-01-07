@@ -17,6 +17,11 @@ stock-analysis-web-app.py and stock_analysis.py
 streamlit run stock-analysis-web-app.py
 ```
 
+
+Next :  Try with Dash
+
+
+
 Targets and achievements
 - [x] Run web app locally
 - [ ] Add Docker 
