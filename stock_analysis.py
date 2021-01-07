@@ -1,6 +1,7 @@
 """
 following
 https://www.learndatasci.com/tutorials/python-finance-part-yahoo-finance-api-pandas-matplotlib/
+https://www.learndatasci.com/tutorials/python-finance-part-2-intro-quantitative-trading-strategies/
 https://www.learndatasci.com/tutorials/python-finance-part-3-moving-average-trading-strategy/
 
 """
@@ -113,7 +114,6 @@ r_t = log_returns.tail(1).transpose()
 
 # Weights as defined above
 weights_vector = pd.DataFrame(1 / 3, index=r_t.index, columns=r_t.columns)
-
 # Total log_return for the portfolio is:
 portfolio_log_return = weights_vector.transpose().dot(r_t)
 
@@ -159,16 +159,14 @@ average_yearly_return = (1 + total_portfolio_return)**(1 / number_of_years) - 1
 #print('Average yearly return is: ' +
 #      '{:5.2f}'.format(100 * average_yearly_return) + '%')
 
-
-def plot_price(name='MSFT'):
-    start_date = '2015-01-01'
-    end_date = '2016-12-31'
-
+start_date = dt.datetime(2015, 1, 1)
+end_date = dt.datetime(2016, 12, 31)
+def plot_price(name='MSFT', start=start_date, end=end_date):
     fig, ax = plt.subplots(figsize=(12,5))
 
-    ax.plot(close.loc[start_date:end_date, :].index, close.loc[start_date:end_date, name], label='Price')
-    ax.plot(long_rolling.loc[start_date:end_date, :].index, long_rolling.loc[start_date:end_date, name], label = '100-days SMA')
-    ax.plot(short_rolling.loc[start_date:end_date, :].index, short_rolling.loc[start_date:end_date, name], label = '20-days SMA')
+    ax.plot(close.loc[start:end, :].index, close.loc[start:end, name], label='Price')
+    ax.plot(long_rolling.loc[start:end, :].index, long_rolling.loc[start:end, name], label = '100-days SMA')
+    ax.plot(short_rolling.loc[start:end, :].index, short_rolling.loc[start:end, name], label = '20-days SMA')
 
     ax.legend(loc='best')
     ax.set_ylabel('Price in $')
@@ -177,17 +175,16 @@ def plot_price(name='MSFT'):
 
 #plot_price()
 # Using Pandas to calculate a 20-days span EMA. adjust=False specifies that we are interested in the recursive calculation mode.
-start_date = dt.datetime(2015, 1, 1)
-end_date = dt.datetime(2016, 12, 31)
+
 ema_short = close.ewm(span=20, adjust=False).mean()
 
 
-def plot_ema(name='MSFT'):
+def plot_ema(name='MSFT', start=start_date, end=end_date):
     fig, ax = plt.subplots(figsize=(15,9))
 
-    ax.plot(close.loc[start_date:end_date, :].index, close.loc[start_date:end_date, name], label='Price')
-    ax.plot(ema_short.loc[start_date:end_date, :].index, ema_short.loc[start_date:end_date, name], label = 'Span 20-days EMA')
-    ax.plot(short_rolling.loc[start_date:end_date, :].index, short_rolling.loc[start_date:end_date, name], label = '20-days SMA')
+    ax.plot(close.loc[start:end, :].index, close.loc[start:end, name], label='Price')
+    ax.plot(ema_short.loc[start:end, :].index, ema_short.loc[start:end, name], label = 'Span 20-days EMA')
+    ax.plot(short_rolling.loc[start:end, :].index, short_rolling.loc[start:end, name], label = '20-days SMA')
 
     ax.legend(loc='best')
     ax.set_ylabel('Price in $')
@@ -204,17 +201,17 @@ trading_positions = trading_positions_raw.apply(np.sign) * 1/3
 trading_positions_final = trading_positions.shift(1)
 
 
-def plot_trading_position(name='MSFT'):
+def plot_trading_position(name='MSFT', start=start_date, end=end_date):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 5))
 
-    ax1.plot(close.loc[start_date:end_date, :].index, close.loc[start_date:end_date, name], label='Price')
-    ax1.plot(ema_short.loc[start_date:end_date, :].index, ema_short.loc[start_date:end_date, name], label = 'Span 20-days EMA')
+    ax1.plot(close.loc[start:end, :].index, close.loc[start:end, name], label='Price')
+    ax1.plot(ema_short.loc[start:end, :].index, ema_short.loc[start:end, name], label = 'Span 20-days EMA')
 
     ax1.set_ylabel('$')
     ax1.legend(loc='best')
     ax1.xaxis.set_major_formatter(my_year_month_fmt)
 
-    ax2.plot(trading_positions_final.loc[start_date:end_date, :].index, trading_positions_final.loc[start_date:end_date, 'MSFT'], 
+    ax2.plot(trading_positions_final.loc[start:end, :].index, trading_positions_final.loc[start:end, 'MSFT'], 
             label='Trading position')
 
     ax2.set_ylabel('Trading position')
