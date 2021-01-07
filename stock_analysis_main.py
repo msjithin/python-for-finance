@@ -1,17 +1,17 @@
 
 from os import write
 from PIL import Image
-from numpy.core.numeric import True_
 import streamlit as st 
 import datetime as dt
 import matplotlib.pyplot as plt
 from pathlib import Path
 import plotly.express as px
 import plotly.graph_objects as go
+from streamlit.proto import ColorPicker_pb2
 from stock_analysis import *
 from streamlit.elements import button
 # Use the full page instead of a narrow central column
-st.set_page_config(page_title='Stock web app')
+#st.set_page_config(page_title='Stock web app')
 
 image1, image2, image3 = st.beta_columns([2,1,1])
 #Add title and image 
@@ -39,9 +39,9 @@ st.write(get_line_plotly(stock_selected))
 st.subheader('Log returns')
 st.write(plot_return())
 
-def weights_pie_chart(donut=True):
+def weights_pie_chart(donut=True, weights=weights_vector.transpose().values[-1].tolist()):
     labels = stock_names
-    sizes = weights_vector.transpose().values[-1].tolist()
+    sizes = weights
     # print('weights = ', sizes)
     # # Use `hole` to create a donut-like pie chart
     layout = go.Layout(height = 400, width = 400,
@@ -56,7 +56,15 @@ def weights_pie_chart(donut=True):
     return fig1
 
 st.subheader('Weights')    
-st.write(weights_pie_chart(False))
+pie1, pie2 = st.beta_columns([1,1])
+input_weight = [1]*len(stock_names)
+for i in range(len(stock_names)):
+    input_weight[i] = pie1.slider( stock_names[i] + ' weight', value=1.0, min_value=0.0, max_value=1.0, step=0.1, key=i+1)
+if sum(input_weight) == 0:
+    normalized_weight = [1, 1, 1]
+else:
+    normalized_weight = [ x / sum(input_weight) for x in input_weight ]
+pie2.write(weights_pie_chart(False, normalized_weight))
 
 st.subheader('Portfolio returns')
 st.write(portfolio_returns())
