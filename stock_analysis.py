@@ -12,6 +12,7 @@ import matplotlib.dates as mdates
 import pandas as pd
 import numpy as np
 import datetime as dt
+import plotly.express as px
 
 import seaborn as sns
 sns.set(style='darkgrid', context='talk', palette='Dark2')
@@ -73,6 +74,32 @@ def get_time_series(name='MSFT'):
     ax_ts.legend()
     return fig_ts
 
+def get_line_plotly(name='MSFT'):
+    # Get the MSFT timeseries. This now returns a Pandas Series object indexed by date.
+    stock_ts = close.loc[:, name]
+
+    # Calculate the 20 and 100 days moving averages of the closing prices
+    short_rolling_msft = stock_ts.rolling(window=20).mean()
+    long_rolling_msft = stock_ts.rolling(window=100).mean()
+    print(short_rolling_msft)
+    fig = px.line(stock_ts, width=900
+                            , height=500
+                            )
+    fig.update_xaxes(
+        rangeslider_visible=True,
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1, label="1m", step="month", stepmode="backward"),
+                dict(count=6, label="6m", step="month", stepmode="backward"),
+                dict(count=1, label="YTD", step="year", stepmode="todate"),
+                dict(count=1, label="1y", step="year", stepmode="backward"),
+                dict(step="all")
+            ])
+        )
+    )
+    fig.update_xaxes(title_text='Date')
+    fig.update_yaxes(title_text='Value ($)')
+    return fig
 #get_time_series('MSFT')
 
 # Calculating the short-window moving average

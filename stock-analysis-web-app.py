@@ -35,7 +35,7 @@ elif dropdown_select_stock == 'Apple':
 elif dropdown_select_stock == 's&P 500':
     stock_selected = '^GSPC'
 st.write(get_time_series(stock_selected))
-
+st.write(get_line_plotly(stock_selected))
 st.subheader('Log returns')
 st.write(plot_return())
 
@@ -55,11 +55,8 @@ def weights_pie_chart(donut=True):
     
     return fig1
 
-
 st.subheader('Weights')    
 st.write(weights_pie_chart(False))
-
-
 
 st.subheader('Portfolio returns')
 st.write(portfolio_returns())
