@@ -43,8 +43,6 @@ def weights_pie_chart():
     # Pie chart, where the slices will be ordered and plotted counter-clockwise:
     labels = stock_names
     sizes = [1/3, 1/3, 1/3]
-    print(labels)
-    print(sizes)
     explode = (0, 0.1, 0, )  # only "explode" the 2nd slice (i.e. 'Hogs')
 
     fig1, ax1 = plt.subplots()
