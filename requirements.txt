@@ -1,0 +1,11 @@
+python>=3.8
+pandas_datareader
+matplotlib
+pandas
+numpy
+datetime
+seaborn
+PIL
+streamlit
+plotly
+
