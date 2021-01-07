@@ -55,7 +55,6 @@ close = close.fillna(method='ffill')
 #print(close.describe())
 
 
-@st.cache
 def get_time_series(name='MSFT'):
     # Get the MSFT timeseries. This now returns a Pandas Series object indexed by date.
     msft = close.loc[:, name]
@@ -76,7 +75,6 @@ def get_time_series(name='MSFT'):
     ax_ts.legend()
     return fig_ts
 
-@st.cache
 def get_line_plotly(name='MSFT'):
     # Get the MSFT timeseries. This now returns a Pandas Series object indexed by date.
     stock_ts = close.loc[:, name]
@@ -117,7 +115,6 @@ returns = close.pct_change(1)
 # Log returns - First the logarithm of the prices is taken and the the difference of consecutive (log) observations
 log_returns = np.log(close).diff()
 
-@st.cache
 def plot_return():
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12,7))
 
@@ -162,7 +159,6 @@ portfolio_log_returns.tail()
 
 total_relative_returns = (np.exp(portfolio_log_returns.cumsum()) - 1)
 
-@st.cache
 def portfolio_returns():
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 9))
 
@@ -192,7 +188,6 @@ average_yearly_return = (1 + total_portfolio_return)**(1 / number_of_years) - 1
 start_date = dt.datetime(2015, 1, 1)
 end_date = dt.datetime(2016, 12, 31)
 
-@st.cache
 def plot_price(name='MSFT', start=start_date, end=end_date):
     fig, ax = plt.subplots(figsize=(12,5))
 
@@ -210,7 +205,6 @@ def plot_price(name='MSFT', start=start_date, end=end_date):
 
 ema_short = close.ewm(span=20, adjust=False).mean()
 
-@st.cache
 def plot_ema(name='MSFT', start=start_date, end=end_date):
     fig, ax = plt.subplots(figsize=(15,9))
 
@@ -232,7 +226,6 @@ trading_positions = trading_positions_raw.apply(np.sign) * 1/3
 # Lagging our trading signals by one day.
 trading_positions_final = trading_positions.shift(1)
 
-@st.cache
 def plot_trading_position(name='MSFT', start=start_date, end=end_date):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 5))
 
@@ -260,7 +253,6 @@ cum_strategy_asset_log_returns = strategy_asset_log_returns.cumsum()
 # Transform the cumulative log returns to relative returns
 cum_strategy_asset_relative_returns = np.exp(cum_strategy_asset_log_returns) - 1
 
-@st.cache
 def plot_best_returns():
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12,7))
 
@@ -289,7 +281,6 @@ cum_strategy_log_return = cum_strategy_asset_log_returns.sum(axis=1)
 # Transform the cumulative log returns to relative returns. This is the approximation
 cum_relative_return_approx = np.exp(cum_strategy_log_return) - 1
 
-@st.cache
 def total_retuns():
     fig, ax = plt.subplots(figsize=(12, 5))
 
