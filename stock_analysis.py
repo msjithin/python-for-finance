@@ -11,6 +11,7 @@ import matplotlib.dates as mdates
 import pandas as pd
 import numpy as np
 import datetime as dt
+
 import seaborn as sns
 sns.set(style='darkgrid', context='talk', palette='Dark2')
 my_year_month_fmt = mdates.DateFormatter('%m/%y')
@@ -27,6 +28,7 @@ tickers = ['AAPL', 'MSFT', '^GSPC']
 # We would like all available data from 01/01/2000 until today.
 start_date = dt.datetime(2000, 1, 1)
 end_date = dt.date.today()
+
 panel_data = web.DataReader(tickers, 'yahoo', start_date, end_date)
 #print(panel_data.head(9))
 # Getting just the adjusted closing prices. This will return a Pandas DataFrame
@@ -47,6 +49,8 @@ close = close.reindex(all_weekdays)
 close = close.fillna(method='ffill')
 #print(close.head(10))
 #print(close.describe())
+
+
 
 def get_time_series(name='MSFT'):
     # Get the MSFT timeseries. This now returns a Pandas Series object indexed by date.
@@ -82,6 +86,7 @@ returns = close.pct_change(1)
 # Log returns - First the logarithm of the prices is taken and the the difference of consecutive (log) observations
 log_returns = np.log(close).diff()
 
+
 def plot_return():
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12,7))
 
@@ -97,8 +102,7 @@ def plot_return():
     ax2.set_ylabel('Total relative returns (%)')
     ax2.legend(loc='best')
 
-    plt.show()
-    return 
+    return fig
 
 #plot_return()
 
@@ -127,7 +131,9 @@ portfolio_log_returns = pd.Series(np.diag(temp_var), index=log_returns.index)
 portfolio_log_returns.tail()
 
 total_relative_returns = (np.exp(portfolio_log_returns.cumsum()) - 1)
-def plot_returns():
+
+
+def portfolio_returns():
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 9))
 
     ax1.plot(portfolio_log_returns.index, portfolio_log_returns.cumsum())
@@ -135,10 +141,9 @@ def plot_returns():
 
     ax2.plot(total_relative_returns.index, 100 * total_relative_returns)
     ax2.set_ylabel('Portfolio total relative returns (%)')
+    return fig
+    
 
-    plt.show()
-
-#plot_returns()
 # Calculating the time-related parameters of the simulation
 days_per_year = 52 * 5
 total_days_in_simulation = close.shape[0]
@@ -149,44 +154,45 @@ total_portfolio_return = total_relative_returns[-1]
 # Average portfolio return assuming compunding of returns
 average_yearly_return = (1 + total_portfolio_return)**(1 / number_of_years) - 1
 
-print('Total portfolio return is: ' +
-      '{:5.2f}'.format(100 * total_portfolio_return) + '%')
-print('Average yearly return is: ' +
-      '{:5.2f}'.format(100 * average_yearly_return) + '%')
+#print('Total portfolio return is: ' +
+#      '{:5.2f}'.format(100 * total_portfolio_return) + '%')
+#print('Average yearly return is: ' +
+#      '{:5.2f}'.format(100 * average_yearly_return) + '%')
 
-def plot_price():
+
+def plot_price(name='MSFT'):
     start_date = '2015-01-01'
     end_date = '2016-12-31'
 
     fig, ax = plt.subplots(figsize=(12,5))
 
-    ax.plot(close.loc[start_date:end_date, :].index, close.loc[start_date:end_date, 'MSFT'], label='Price')
-    ax.plot(long_rolling.loc[start_date:end_date, :].index, long_rolling.loc[start_date:end_date, 'MSFT'], label = '100-days SMA')
-    ax.plot(short_rolling.loc[start_date:end_date, :].index, short_rolling.loc[start_date:end_date, 'MSFT'], label = '20-days SMA')
+    ax.plot(close.loc[start_date:end_date, :].index, close.loc[start_date:end_date, name], label='Price')
+    ax.plot(long_rolling.loc[start_date:end_date, :].index, long_rolling.loc[start_date:end_date, name], label = '100-days SMA')
+    ax.plot(short_rolling.loc[start_date:end_date, :].index, short_rolling.loc[start_date:end_date, name], label = '20-days SMA')
 
     ax.legend(loc='best')
     ax.set_ylabel('Price in $')
     ax.xaxis.set_major_formatter(my_year_month_fmt)
-    plt.show()
+    return fig
 
 #plot_price()
 # Using Pandas to calculate a 20-days span EMA. adjust=False specifies that we are interested in the recursive calculation mode.
 start_date = dt.datetime(2015, 1, 1)
 end_date = dt.datetime(2016, 12, 31)
 ema_short = close.ewm(span=20, adjust=False).mean()
-def plot_ema():
 
 
+def plot_ema(name='MSFT'):
     fig, ax = plt.subplots(figsize=(15,9))
 
-    ax.plot(close.loc[start_date:end_date, :].index, close.loc[start_date:end_date, 'MSFT'], label='Price')
-    ax.plot(ema_short.loc[start_date:end_date, :].index, ema_short.loc[start_date:end_date, 'MSFT'], label = 'Span 20-days EMA')
-    ax.plot(short_rolling.loc[start_date:end_date, :].index, short_rolling.loc[start_date:end_date, 'MSFT'], label = '20-days SMA')
+    ax.plot(close.loc[start_date:end_date, :].index, close.loc[start_date:end_date, name], label='Price')
+    ax.plot(ema_short.loc[start_date:end_date, :].index, ema_short.loc[start_date:end_date, name], label = 'Span 20-days EMA')
+    ax.plot(short_rolling.loc[start_date:end_date, :].index, short_rolling.loc[start_date:end_date, name], label = '20-days SMA')
 
     ax.legend(loc='best')
     ax.set_ylabel('Price in $')
     ax.xaxis.set_major_formatter(my_year_month_fmt)
-    plt.show()
+    return fig
 
 # Taking the difference between the prices and the EMA timeseries
 trading_positions_raw = close - ema_short
@@ -197,22 +203,23 @@ trading_positions = trading_positions_raw.apply(np.sign) * 1/3
 # Lagging our trading signals by one day.
 trading_positions_final = trading_positions.shift(1)
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 5))
 
-ax1.plot(close.loc[start_date:end_date, :].index, close.loc[start_date:end_date, 'MSFT'], label='Price')
-ax1.plot(ema_short.loc[start_date:end_date, :].index, ema_short.loc[start_date:end_date, 'MSFT'], label = 'Span 20-days EMA')
+def plot_trading_position(name='MSFT'):
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 5))
 
-ax1.set_ylabel('$')
-ax1.legend(loc='best')
-ax1.xaxis.set_major_formatter(my_year_month_fmt)
+    ax1.plot(close.loc[start_date:end_date, :].index, close.loc[start_date:end_date, name], label='Price')
+    ax1.plot(ema_short.loc[start_date:end_date, :].index, ema_short.loc[start_date:end_date, name], label = 'Span 20-days EMA')
 
-ax2.plot(trading_positions_final.loc[start_date:end_date, :].index, trading_positions_final.loc[start_date:end_date, 'MSFT'], 
-        label='Trading position')
+    ax1.set_ylabel('$')
+    ax1.legend(loc='best')
+    ax1.xaxis.set_major_formatter(my_year_month_fmt)
 
-ax2.set_ylabel('Trading position')
-ax2.xaxis.set_major_formatter(my_year_month_fmt)
-plt.show()
+    ax2.plot(trading_positions_final.loc[start_date:end_date, :].index, trading_positions_final.loc[start_date:end_date, 'MSFT'], 
+            label='Trading position')
 
+    ax2.set_ylabel('Trading position')
+    ax2.xaxis.set_major_formatter(my_year_month_fmt)
+    return fig
 
 # Log returns - First the logarithm of the prices is taken and the the difference of consecutive (log) observations
 asset_log_returns = np.log(close).diff()
@@ -224,22 +231,24 @@ cum_strategy_asset_log_returns = strategy_asset_log_returns.cumsum()
 # Transform the cumulative log returns to relative returns
 cum_strategy_asset_relative_returns = np.exp(cum_strategy_asset_log_returns) - 1
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12,7))
 
-for c in asset_log_returns:
-    ax1.plot(cum_strategy_asset_log_returns.index, cum_strategy_asset_log_returns[c], label=str(c))
+def plot_best_returns():
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12,7))
 
-ax1.set_ylabel('Cumulative log-returns')
-ax1.legend(loc='best')
-ax1.xaxis.set_major_formatter(my_year_month_fmt)
+    for c in asset_log_returns:
+        ax1.plot(cum_strategy_asset_log_returns.index, cum_strategy_asset_log_returns[c], label=str(c))
 
-for c in asset_log_returns:
-    ax2.plot(cum_strategy_asset_relative_returns.index, 100*cum_strategy_asset_relative_returns[c], label=str(c))
+    ax1.set_ylabel('Cumulative log-returns')
+    ax1.legend(loc='best')
+    ax1.xaxis.set_major_formatter(my_year_month_fmt)
 
-ax2.set_ylabel('Total relative returns (%)')
-ax2.legend(loc='best')
-ax2.xaxis.set_major_formatter(my_year_month_fmt)
-plt.show()
+    for c in asset_log_returns:
+        ax2.plot(cum_strategy_asset_relative_returns.index, 100*cum_strategy_asset_relative_returns[c], label=str(c))
+
+    ax2.set_ylabel('Total relative returns (%)')
+    ax2.legend(loc='best')
+    ax2.xaxis.set_major_formatter(my_year_month_fmt)
+    return fig
 
 
 # Total strategy relative returns. This is the exact calculation.
@@ -251,13 +260,15 @@ cum_strategy_log_return = cum_strategy_asset_log_returns.sum(axis=1)
 # Transform the cumulative log returns to relative returns. This is the approximation
 cum_relative_return_approx = np.exp(cum_strategy_log_return) - 1
 
-fig, ax = plt.subplots(figsize=(12, 5))
 
-ax.plot(cum_relative_return_exact.index, 100*cum_relative_return_exact, label='Exact')
-ax.plot(cum_relative_return_approx.index, 100*cum_relative_return_approx, label='Approximation')
+def total_retuns():
+    fig, ax = plt.subplots(figsize=(12, 5))
 
-ax.set_ylabel('Total cumulative relative returns (%)')
-ax.legend(loc='best')
-ax.xaxis.set_major_formatter(my_year_month_fmt)
+    ax.plot(cum_relative_return_exact.index, 100*cum_relative_return_exact, label='Exact')
+    ax.plot(cum_relative_return_approx.index, 100*cum_relative_return_approx, label='Approximation')
 
-plt.show()
+    ax.set_ylabel('Total cumulative relative returns (%)')
+    ax.legend(loc='best')
+    ax.xaxis.set_major_formatter(my_year_month_fmt)
+
+    return fig
