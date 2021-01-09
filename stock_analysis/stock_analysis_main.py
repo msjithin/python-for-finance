@@ -96,4 +96,4 @@ st.write(plot_best_returns())
 st.subheader('Total returns ')
 st.write(total_retuns())
 
-print(dt.datetime.now().strftime("%H:%M:%S") , ' script end reached .....')
+#print(dt.datetime.now().strftime("%H:%M:%S") , ' script end reached .....')

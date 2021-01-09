@@ -82,7 +82,7 @@ def get_line_plotly(name='MSFT'):
     # Calculate the 20 and 100 days moving averages of the closing prices
     short_rolling_msft = stock_ts.rolling(window=20).mean()
     long_rolling_msft = stock_ts.rolling(window=100).mean()
-    print(short_rolling_msft)
+    #print(short_rolling_msft)
     fig = px.line(stock_ts, width=900
                             , height=500
                             )
