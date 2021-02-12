@@ -78,6 +78,9 @@ def buttonClicked(x, y, button):
         x_Score += 1
         messagebox.showinfo("Score", " X won! \n X: {} \t O: {}".format(x_Score, oScore)) 
         reset_values()
+    if nClick == 9:
+        messagebox.showinfo("Score", " Tie! \n X: {} \t O: {}".format(x_Score, oScore)) 
+        reset_values()
 
 class CanvasButton:
     def __init__(self, canvas, x, y):
