@@ -10,14 +10,24 @@ root.resizable(width=False,height=False)
 canv = Canvas(root, width=420, height=420, bd=0)
 canv.pack() 
 STEP = 115
-nClick = 0
+
 reset = False
 backkground = PhotoImage(file ="assets/background.png")
 x_Photo = ImageTk.PhotoImage(Image.open("assets/x_2.png"))
 o_Photo = ImageTk.PhotoImage(Image.open("assets/o_2.png"))
 square_photo = ImageTk.PhotoImage(Image.open("assets/square.png"))
+
+nClick = 0
 x_clicked = [ 0 for i in range(9) ]
 o_clicked = [ 0 for i in range(9) ]
+x_Score , oScore = 0, 0
+def reset_values():
+    global nClick, x_clicked, o_clicked
+    nClick = 0
+    x_clicked = [ 0 for i in range(9) ]
+    o_clicked = [ 0 for i in range(9) ]
+    play()
+
 canv.create_image(210,210, image=backkground)      
 buttons = []
 B00 = ''
@@ -50,7 +60,7 @@ def check_score(clicks):
 
 def buttonClicked(x, y, button):
     #print('clicked', y , x)
-    global nClick, reset
+    global nClick, reset, x_Score, oScore
     nClick += 1
     if nClick % 2 == 0:
         button.configure(image = o_Photo)
@@ -59,13 +69,16 @@ def buttonClicked(x, y, button):
         button.configure(image = x_Photo)
         x_clicked[3*y + x] = 1
     if check_score(o_clicked):
-        print(' O won!')
-        messagebox.showinfo("Score", " O won!") 
-        reset = True
+        #print(' O won!')
+        oScore += 1
+        messagebox.showinfo("Score", " O won! \n X: {} \t O: {}".format(x_Score, oScore)) 
+        reset_values()
     if check_score(x_clicked):
-        print(' X won!')
-        messagebox.showinfo("Score", " X won!") 
-        reset = True
+        #print(' X won!')
+        x_Score += 1
+        messagebox.showinfo("Score", " X won! \n X: {} \t O: {}".format(x_Score, oScore)) 
+        reset_values()
+
 class CanvasButton:
     def __init__(self, canvas, x, y):
         pivots = [ 58 , 210 , 350]
@@ -94,4 +107,3 @@ def play():
 
 play()  
 root.mainloop()
-
